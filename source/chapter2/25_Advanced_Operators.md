@@ -182,9 +182,7 @@ let blueComponent = pink & 0x0000FF         // blueComponent 是 0x99，即 153
 
 ![Art/bitshiftSignedAddition_2x.png](https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Art/bitshiftSignedAddition_2x.png "Art/bitshiftSignedAddition_2x.png")
 
-其次，使用二进制补码可以使负数的按位左移和右移运算得到跟正数同样的效果，即每向左移一位就将自身的数值乘以 2，每向右一位就将自身的数值除以 2。要达到此目的，对有符号整数的右移有一个额外的规则：
-
-* 当对整数进行按位右移运算时，遵循与无符号整数相同的规则，但是对于移位产生的空白位使用符号位进行填充，而不是用 `0`。
+其次，使用二进制补码可以使负数的按位左移和右移运算得到跟正数同样的效果，即每向左移一位就将自身的数值乘以 2，每向右一位就将自身的数值除以 2。要达到此目的，对有符号整数的右移有一个额外的规则：当对整数进行按位右移运算时，遵循与无符号整数相同的规则，但是对于移位产生的空白位使用符号位进行填充，而不是用 `0`。
 
 ![Art/bitshiftSigned_2x.png](https://developer.apple.com/library/prerelease/ios/documentation/Swift/Conceptual/Swift_Programming_Language/Art/bitshiftSigned_2x.png "Art/bitshiftSigned_2x.png")
 
@@ -320,8 +318,11 @@ signedOverflow = signedOverflow &- 1
 struct Vector2D {
     var x = 0.0, y = 0.0
 }
-func + (left: Vector2D, right: Vector2D) -> Vector2D {
-    return Vector2D(x: left.x + right.x, y: left.y + right.y)
+
+extension Vector2D {
+    static func + (left: Vector2D, right: Vector2D) -> Vector2D {
+        return Vector2D(x: left.x + right.x, y: left.y + right.y)
+    }
 }
 ```
 
@@ -460,9 +461,11 @@ let afterDoubling = +++toBeDoubled
 以下例子定义了一个新的中缀运算符 `+-`，此运算符的结合性为 `left`，并且它的优先级为 `140`：
 
 ```swift
-infix operator +- { associativity left precedence 140 }
-func +- (left: Vector2D, right: Vector2D) -> Vector2D {
-    return Vector2D(x: left.x + right.x, y: left.y - right.y)
+infix operator +-: AdditionPrecedence
+extension Vector2D {
+    static func +- (left: Vector2D, right: Vector2D) -> Vector2D {
+        return Vector2D(x: left.x + right.x, y: left.y - right.y)
+    }
 }
 let firstVector = Vector2D(x: 1.0, y: 2.0)
 let secondVector = Vector2D(x: 3.0, y: 4.0)
